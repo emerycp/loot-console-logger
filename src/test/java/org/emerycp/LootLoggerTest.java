@@ -1,13 +1,13 @@
-package com.example;
+package org.emerycp;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class LootLoggerTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(LootLogger.class);
 		RuneLite.main(args);
 	}
 }
