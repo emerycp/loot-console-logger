@@ -68,7 +68,7 @@ public class LootLogger extends Plugin
 				hCount++;
 				if(hCount != 1)
 					highlightStack += " / ";
-				highlightStack += currentName;
+				highlightStack += (i.getQuantity()+"") + "x " + currentName;
 			}
 		}
 

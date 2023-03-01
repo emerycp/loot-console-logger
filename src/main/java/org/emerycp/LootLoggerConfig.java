@@ -10,7 +10,8 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "drop-console-log",
 			name = "Loot Drop Console Log",
-			description = "Enables loot message on mob death."
+			description = "Enables loot message on mob death.",
+			position = 0
 	)
 	default boolean dropEnabled()
 	{
@@ -20,7 +21,8 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "drop-console-list",
 			name = "Loot Ignore Items",
-			description = "Enter the item name separated by a comma. i.e.: Bones, Coins"
+			description = "Enter the item name separated by a comma. i.e.: Bones, Coins",
+			position = 1
 	)
 	default String getIgnoreList()
 	{
@@ -30,7 +32,8 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "highlight-console-log",
 			name = "Highlight Drop Console Log",
-			description = "Enables highlighted loot messages on mob death."
+			description = "Enables highlighted loot messages on mob death.",
+			position = 2
 	)
 	default boolean highlightEnabled()
 	{
@@ -40,7 +43,8 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "highlight-console-list",
 			name = "Loot Highlight Items",
-			description = "Enter the item name separated by a comma. i.e.: Dragon spear, Rune arrow"
+			description = "Enter the item name separated by a comma. i.e.: Dragon spear, Rune arrow",
+			position = 3
 	)
 	default String getHighlightList()
 	{
