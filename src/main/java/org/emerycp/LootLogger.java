@@ -19,7 +19,8 @@ import java.util.Collection;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Loot Console Logger"
+	name = "Loot Console Logger",
+	description = "Let you log loot drops in your message box."
 )
 public class LootLogger extends Plugin
 {
@@ -43,10 +44,9 @@ public class LootLogger extends Plugin
 		itemStack = "";
 		highlightStack = "";
 		mobKilled = event.getName();
-		int count = 0;
-		int hCount = 0;
 
 		String[] ignoreList = config.getIgnoreList().toLowerCase().replaceAll("\\s", "").split(",");
+		String[] ignoreMonsterList = config.getIgnoreMonster().toLowerCase().replaceAll("\\s", "").split(",");
 		String[] highlightList = config.getHighlightList().toLowerCase().replaceAll("\\s", "").split(",");
 		Collection<ItemStack> iS = event.getItems();
 		for (ItemStack i: iS) {
@@ -56,8 +56,7 @@ public class LootLogger extends Plugin
 			//  Drop
 			if(config.dropEnabled() && !find(ignoreList, cleanCurrentName))
 			{
-				count++;
-				if(count != 1)
+				if(!itemStack.isEmpty())
 					itemStack += " / ";
 				itemStack +=  (i.getQuantity()+"") + "x " + currentName;
 			}
@@ -65,20 +64,21 @@ public class LootLogger extends Plugin
 			// Highlight
 			if(config.highlightEnabled() && find(highlightList, cleanCurrentName))
 			{
-				hCount++;
-				if(hCount != 1)
+				if(!highlightStack.isEmpty())
 					highlightStack += " / ";
 				highlightStack += (i.getQuantity()+"") + "x " + currentName;
 			}
 		}
 
-		if(count > 0 && config.dropEnabled())
+		if(config.dropEnabled() &&
+				!find(ignoreMonsterList, mobKilled.toLowerCase().replaceAll("\\s", "")) &&
+				!itemStack.isEmpty())
 		{
 			itemStack += ".";
 			sendMessage();
 		}
 
-		if(hCount > 0 && config.highlightEnabled())
+		if(config.highlightEnabled() && !highlightStack.isEmpty())
 		{
 			highlightStack += ".";
 			sendHighlightMessage();
@@ -93,9 +93,11 @@ public class LootLogger extends Plugin
 
 	public void sendHighlightMessage() {
 
+		String message = config.getHighlightMessage().trim();
+		message += !message.isEmpty() ? ": " : "";
+
 		final String formattedMessage = new ChatMessageBuilder()
-				.append(ChatColorType.HIGHLIGHT)
-				.append("HL drop: " + highlightStack)
+				.append(config.getHighlightColor(), message + highlightStack)
 				.build();
 
 		chatMessageManager.queue(QueuedMessage.builder()

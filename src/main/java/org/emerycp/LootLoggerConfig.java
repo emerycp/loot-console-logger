@@ -1,8 +1,11 @@
 package org.emerycp;
 
+import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+
+import java.awt.*;
 
 @ConfigGroup("LootConsoleLogger")
 public interface LootLoggerConfig extends Config
@@ -20,11 +23,21 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 			keyName = "drop-console-list",
-			name = "Loot Ignore Items",
+			name = "Ignored Items",
 			description = "Enter the item name separated by a comma. i.e.: Bones, Coins",
 			position = 1
 	)
 	default String getIgnoreList()
+	{
+		return "";
+	}
+	@ConfigItem(
+			keyName = "drop-console-monster-list",
+			name = "Ignored Monsters",
+			description = "Enter the monster name separated by a comma. i.e.: Goblin, TzTok-Jad",
+			position = 2
+	)
+	default String getIgnoreMonster()
 	{
 		return "";
 	}
@@ -33,7 +46,7 @@ public interface LootLoggerConfig extends Config
 			keyName = "highlight-console-log",
 			name = "Highlight Drop Console Log",
 			description = "Enables highlighted loot messages on mob death.",
-			position = 2
+			position = 3
 	)
 	default boolean highlightEnabled()
 	{
@@ -42,12 +55,35 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 			keyName = "highlight-console-list",
-			name = "Loot Highlight Items",
+			name = "Highlighted Items",
 			description = "Enter the item name separated by a comma. i.e.: Dragon spear, Rune arrow",
-			position = 3
+			position = 4
 	)
 	default String getHighlightList()
 	{
 		return "";
 	}
+
+	@ConfigItem(
+			keyName = "highlight-console-message",
+			name = "Loot Highlight Message",
+			description = "Set the text in front of highlighted loot",
+			position = 5
+	)
+	default String getHighlightMessage()
+	{
+		return "Drops";
+	}
+
+	@ConfigItem(
+			keyName = "highlight-console-color",
+			name = "Loot Highlight Color",
+			description = "Set the color of highlighted loot message",
+			position = 6
+	)
+	default Color getHighlightColor()
+	{
+		return new Color(202, 19, 19);
+	}
+
 }
