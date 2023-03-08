@@ -1,4 +1,4 @@
-# Loot Console Logger
+# ![icon](https://user-images.githubusercontent.com/38258431/223797326-aa318a83-6882-48ee-9c40-ea0e012ce98f.png) Loot Console Logger
 A very simple plugin that logs your loot drops in your OSRS's message box.
 
 Useful when you have limited screen space from playing with multiple accounts  
