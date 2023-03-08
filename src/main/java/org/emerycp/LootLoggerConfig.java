@@ -13,7 +13,7 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "drop-console-log",
 			name = "Loot Drop Console Log",
-			description = "Enables loot message on mob death.",
+			description = "Enables loot message on a monster's death.",
 			position = 0
 	)
 	default boolean dropEnabled()
@@ -45,7 +45,7 @@ public interface LootLoggerConfig extends Config
 	@ConfigItem(
 			keyName = "highlight-console-log",
 			name = "Highlight Drop Console Log",
-			description = "Enables highlighted loot messages on mob death.",
+			description = "Enables highlighted loot messages on a monster's death.",
 			position = 3
 	)
 	default boolean highlightEnabled()
@@ -66,8 +66,8 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 			keyName = "highlight-console-message",
-			name = "Loot Highlight Message",
-			description = "Set the text in front of highlighted loot",
+			name = "Highlighted Message",
+			description = "Set the text in front of a highlighted loot message.",
 			position = 5
 	)
 	default String getHighlightMessage()
@@ -77,8 +77,8 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 			keyName = "highlight-console-color",
-			name = "Loot Highlight Color",
-			description = "Set the color of highlighted loot message",
+			name = "Highlight Color",
+			description = "Set the color of a highlighted loot message.",
 			position = 6
 	)
 	default Color getHighlightColor()
