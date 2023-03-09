@@ -45,13 +45,15 @@ public class LootLogger extends Plugin
 		highlightStack = "";
 		mobKilled = event.getName();
 
-		String[] ignoreList = config.getIgnoreList().toLowerCase().replaceAll("\\s", "").split(",");
-		String[] ignoreMonsterList = config.getIgnoreMonster().toLowerCase().replaceAll("\\s", "").split(",");
-		String[] highlightList = config.getHighlightList().toLowerCase().replaceAll("\\s", "").split(",");
+		// Configs
+		String[] ignoreList = format(config.getIgnoreList()).split(",");
+		String[] ignoreMonsterList = format(config.getIgnoreMonster()).split(",");
+		String[] highlightList = format(config.getHighlightList()).split(",");
+
 		Collection<ItemStack> iS = event.getItems();
 		for (ItemStack i: iS) {
 			final String currentName = client.getItemDefinition(i.getId()).getName();
-			final String cleanCurrentName = currentName.toLowerCase().replaceAll("\\s", "");
+			final String cleanCurrentName = format(currentName);
 
 			//  Drop
 			if(config.dropEnabled() && !find(ignoreList, cleanCurrentName))
@@ -70,9 +72,7 @@ public class LootLogger extends Plugin
 			}
 		}
 
-		if(config.dropEnabled() &&
-				!find(ignoreMonsterList, mobKilled.toLowerCase().replaceAll("\\s", "")) &&
-				!itemStack.isEmpty())
+		if(config.dropEnabled() && !find(ignoreMonsterList, format(mobKilled)) && !itemStack.isEmpty())
 		{
 			itemStack += ".";
 			sendMessage();
@@ -113,6 +113,11 @@ public class LootLogger extends Plugin
 				return true;
 		}
 		return false;
+	}
+
+	public String format(String toFormat)
+	{
+		return toFormat.toLowerCase().replaceAll("\\s", "");
 	}
 
 	@Provides

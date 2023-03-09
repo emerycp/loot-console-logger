@@ -4,16 +4,34 @@ import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 import java.awt.*;
 
 @ConfigGroup("LootConsoleLogger")
 public interface LootLoggerConfig extends Config
 {
+	@ConfigSection(
+			name = "Loot Drop Log",
+			description = "All options that log loot drop in your message box.",
+			position = 0,
+			closedByDefault = false
+	)
+	String dropSection = "drop";
+
+	@ConfigSection(
+			name = "Highlight Drop Console Log",
+			description = "All options that highlight loot drop in your message box.",
+			position = 1,
+			closedByDefault = false
+	)
+	String highlightSection = "highlight";
+
 	@ConfigItem(
 			keyName = "drop-console-log",
-			name = "Loot Drop Console Log",
-			description = "Enables loot message on a monster's death.",
+			name = "Enabled",
+			description = "Enables loot messages on a monster's death.",
+			section = dropSection,
 			position = 0
 	)
 	default boolean dropEnabled()
@@ -25,6 +43,7 @@ public interface LootLoggerConfig extends Config
 			keyName = "drop-console-list",
 			name = "Ignored Items",
 			description = "Enter the item name separated by a comma. i.e.: Bones, Coins",
+			section = dropSection,
 			position = 1
 	)
 	default String getIgnoreList()
@@ -35,6 +54,7 @@ public interface LootLoggerConfig extends Config
 			keyName = "drop-console-monster-list",
 			name = "Ignored Monsters",
 			description = "Enter the monster name separated by a comma. i.e.: Goblin, TzTok-Jad",
+			section = dropSection,
 			position = 2
 	)
 	default String getIgnoreMonster()
@@ -44,9 +64,10 @@ public interface LootLoggerConfig extends Config
 
 	@ConfigItem(
 			keyName = "highlight-console-log",
-			name = "Highlight Drop Console Log",
+			name = "Enabled",
 			description = "Enables highlighted loot messages on a monster's death.",
-			position = 3
+			section = highlightSection,
+			position = 0
 	)
 	default boolean highlightEnabled()
 	{
@@ -57,7 +78,8 @@ public interface LootLoggerConfig extends Config
 			keyName = "highlight-console-list",
 			name = "Highlighted Items",
 			description = "Enter the item name separated by a comma. i.e.: Dragon spear, Rune arrow",
-			position = 4
+			section = highlightSection,
+			position = 1
 	)
 	default String getHighlightList()
 	{
@@ -68,7 +90,8 @@ public interface LootLoggerConfig extends Config
 			keyName = "highlight-console-message",
 			name = "Highlighted Message",
 			description = "Set the text in front of a highlighted loot message.",
-			position = 5
+			section = highlightSection,
+			position = 2
 	)
 	default String getHighlightMessage()
 	{
@@ -79,7 +102,8 @@ public interface LootLoggerConfig extends Config
 			keyName = "highlight-console-color",
 			name = "Highlight Color",
 			description = "Set the color of a highlighted loot message.",
-			position = 6
+			section = highlightSection,
+			position = 3
 	)
 	default Color getHighlightColor()
 	{
