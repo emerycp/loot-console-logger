@@ -5,10 +5,10 @@ Useful when you have limited screen space from playing with multiple accounts
 or when you just want to see the loot logged in your message box.
 
 ## Features
-- Log monsters drop in the message box
-- Ability to ignore items
+- Log drops in the message box
+- Ability to ignore items from drop
 - Ability to ignore monsters drop
-- Highligh set items
+- Highlight set items
 - Customizable loot highlight message
     
 ## Screenshots
