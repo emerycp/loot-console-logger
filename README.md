@@ -1,4 +1,4 @@
-# ![icon](https://user-images.githubusercontent.com/38258431/223797326-aa318a83-6882-48ee-9c40-ea0e012ce98f.png) Loot Console Logger ![image](https://img.shields.io/github/v/release/emerycp/loot-console-logger?include_prereleases&logo=github) ![image](https://img.shields.io/endpoint?url=https://i.pluginhub.info/shields/installs/plugin/loot-console-logger)
+# ![icon](https://user-images.githubusercontent.com/38258431/223797326-aa318a83-6882-48ee-9c40-ea0e012ce98f.png) Loot Console Logger ![image](https://img.shields.io/github/v/release/emerycp/loot-console-logger?include_prereleases&logo=github)
 A simple plugin that logs your loot drop in your OSRS's message box.
 
 Useful when you have limited screen space from playing with multiple accounts  
