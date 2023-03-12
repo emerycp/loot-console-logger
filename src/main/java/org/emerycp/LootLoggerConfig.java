@@ -63,6 +63,18 @@ public interface LootLoggerConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "drop-console-color",
+			name = "Drop Color",
+			description = "Set the color of the loot messages.",
+			section = dropSection,
+			position = 3
+	)
+	default Color getDropColor()
+	{
+		return new Color(0, 0, 0);
+	}
+
+	@ConfigItem(
 			keyName = "highlight-console-log",
 			name = "Enabled",
 			description = "Enables highlighted loot messages on a monster's death.",

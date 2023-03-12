@@ -88,7 +88,14 @@ public class LootLogger extends Plugin
 
 		final String s = "Drop from " + mobKilled + ": " + itemStack;
 
-		client.addChatMessage(ChatMessageType.CONSOLE, "", s, null);
+		final String formattedMessage = new ChatMessageBuilder()
+				.append(config.getDropColor(), s)
+				.build();
+
+		chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(formattedMessage)
+				.build());
 	}
 
 	public void sendHighlightMessage() {
