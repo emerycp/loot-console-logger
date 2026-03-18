@@ -1,10 +1,15 @@
 package org.emerycp;
 
 import com.google.inject.Provides;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
-import net.runelite.client.chat.ChatColorType;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.ItemComposition;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -15,19 +20,15 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 
-import java.util.Collection;
-
 @Slf4j
 @PluginDescriptor(
 	name = "Loot Console Logger",
 	description = "Let you log loot drops in your message box."
 )
-public class LootLogger extends Plugin
-{
+public class LootLogger extends Plugin {
 
-	String mobKilled = "";
-	String itemStack = "";
-	String highlightStack = "";
+	private static final String SEPARATOR = " / ";
+	private static final String MESSAGE_SUFFIX = ".";
 
 	@Inject
 	private Client client;
@@ -39,97 +40,178 @@ public class LootLogger extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	@Subscribe
-	public void onLootReceived(LootReceived event)
-	{
-		itemStack = "";
-		highlightStack = "";
-		mobKilled = event.getName();
+	public void onLootReceived(LootReceived event) {
+		if (!config.dropEnabled() && !config.highlightEnabled()) {
+			return;
+		}
 
-		// Configs
-		String[] ignoreList = format(config.getIgnoreList()).split(",");
-		String[] ignoreMonsterList = format(config.getIgnoreMonster()).split(",");
-		String[] highlightList = format(config.getHighlightList()).split(",");
+		final Collection<ItemStack> items = event.getItems();
+		if (items == null || items.isEmpty()) {
+			return;
+		}
 
-		Collection<ItemStack> iS = event.getItems();
-		for (ItemStack i: iS) {
-			final String currentName = client.getItemDefinition(i.getId()).getName();
-			final String cleanCurrentName = format(currentName);
+		final String mobKilled = event.getName();
+		final List<String> ignoredMonsters = parseConfigList(
+			config.getIgnoreMonster()
+		);
 
-			//  Drop
-			if(config.dropEnabled() && !find(ignoreList, cleanCurrentName))
-			{
-				if(!itemStack.isEmpty())
-					itemStack += " / ";
-				itemStack +=  (i.getQuantity()+"") + "x " + currentName;
+		final StringBuilder itemStack = new StringBuilder();
+		final List<String> ignoredItems = parseConfigList(
+			config.getIgnoreList()
+		);
+
+		final StringBuilder highlightStack = new StringBuilder();
+		final List<String> highlightedItems = parseConfigList(
+			config.getHighlightList()
+		);
+
+		for (ItemStack item : items) {
+			final String itemName = getItemName(item.getId());
+			final String normalizedItemName = normalize(itemName);
+
+			if (
+				config.dropEnabled() &&
+				!containsMatch(ignoredItems, normalizedItemName)
+			) {
+				appendItem(itemStack, item.getQuantity(), itemName);
 			}
 
-			// Highlight
-			if(config.highlightEnabled() && find(highlightList, cleanCurrentName))
-			{
-				if(!highlightStack.isEmpty())
-					highlightStack += " / ";
-				highlightStack += (i.getQuantity()+"") + "x " + currentName;
+			if (
+				config.highlightEnabled() &&
+				containsMatch(highlightedItems, normalizedItemName)
+			) {
+				appendItem(highlightStack, item.getQuantity(), itemName);
 			}
 		}
 
-		if(config.dropEnabled() && !find(ignoreMonsterList, format(mobKilled)) && !itemStack.isEmpty())
-		{
-			itemStack += ".";
-			sendMessage();
+		if (
+			config.dropEnabled() &&
+			!containsMatch(ignoredMonsters, normalize(mobKilled)) &&
+			itemStack.length() > 0
+		) {
+			sendMessage(mobKilled, itemStack.toString() + MESSAGE_SUFFIX);
 		}
 
-		if(config.highlightEnabled() && !highlightStack.isEmpty())
-		{
-			highlightStack += ".";
-			sendHighlightMessage();
+		if (config.highlightEnabled() && highlightStack.length() > 0) {
+			sendHighlightMessage(highlightStack.toString() + MESSAGE_SUFFIX);
 		}
 	}
-	public void sendMessage() {
 
-		final String s = "Drop from " + mobKilled + ": " + itemStack;
-
-		final String formattedMessage = new ChatMessageBuilder()
-				.append(config.getDropColor(), s)
-				.build();
-
-		chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.CONSOLE)
-				.runeLiteFormattedMessage(formattedMessage)
-				.build());
+	private void sendMessage(String mobKilled, String itemStack) {
+		final String message = "Drop from " + mobKilled + ": " + itemStack;
+		queueConsoleMessage(config.getDropColor(), message);
 	}
 
-	public void sendHighlightMessage() {
-
-		String message = config.getHighlightMessage().trim();
+	private void sendHighlightMessage(String highlightStack) {
+		String message = config.getHighlightMessage();
+		message = message == null ? "" : message.trim();
 		message += !message.isEmpty() ? ": " : "";
 
-		final String formattedMessage = new ChatMessageBuilder()
-				.append(config.getHighlightColor(), message + highlightStack)
-				.build();
-
-		chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.CONSOLE)
-				.runeLiteFormattedMessage(formattedMessage)
-				.build());
+		queueConsoleMessage(
+			config.getHighlightColor(),
+			message + highlightStack
+		);
 	}
 
-	public boolean find(String[] st, String s) {
-		for (String t:
-			 st) {
-			if(!t.isEmpty() && s.contains(t))
-				return true;
+	private void queueConsoleMessage(Color color, String message) {
+		final String formattedMessage = new ChatMessageBuilder()
+			.append(color, message)
+			.build();
+
+		chatMessageManager.queue(
+			QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(formattedMessage)
+				.build()
+		);
+	}
+
+	private String getItemName(int itemId) {
+		try {
+			final ItemComposition itemDefinition = client.getItemDefinition(
+				itemId
+			);
+			if (itemDefinition == null) {
+				return "Item " + itemId;
+			}
+
+			final String itemName = itemDefinition.getName();
+			if (itemName == null || itemName.trim().isEmpty()) {
+				return "Item " + itemId;
+			}
+
+			return itemName;
+		} catch (RuntimeException ex) {
+			log.debug(
+				"Unable to resolve item definition for id {}",
+				itemId,
+				ex
+			);
+			return "Item " + itemId;
 		}
+	}
+
+	private void appendItem(
+		StringBuilder builder,
+		int quantity,
+		String itemName
+	) {
+		if (builder.length() > 0) {
+			builder.append(SEPARATOR);
+		}
+
+		builder.append(quantity).append("x ").append(itemName);
+	}
+
+	private boolean containsMatch(List<String> patterns, String value) {
+		if (value == null || value.isEmpty()) {
+			return false;
+		}
+
+		for (String pattern : patterns) {
+			if (value.contains(pattern)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
-	public String format(String toFormat)
-	{
-		return toFormat.toLowerCase().replaceAll("\\s", "");
+	private List<String> parseConfigList(String configValue) {
+		final List<String> values = new ArrayList<>();
+		if (configValue == null || configValue.trim().isEmpty()) {
+			return values;
+		}
+
+		for (String entry : configValue.split(",")) {
+			final String normalized = normalize(entry);
+			if (!normalized.isEmpty()) {
+				values.add(normalized);
+			}
+		}
+
+		return values;
+	}
+
+	private String normalize(String value) {
+		if (value == null) {
+			return "";
+		}
+
+		final String lowerCased = value.toLowerCase();
+		final StringBuilder normalized = new StringBuilder(lowerCased.length());
+		for (int i = 0; i < lowerCased.length(); i++) {
+			final char currentCharacter = lowerCased.charAt(i);
+			if (!Character.isWhitespace(currentCharacter)) {
+				normalized.append(currentCharacter);
+			}
+		}
+
+		return normalized.toString();
 	}
 
 	@Provides
-	LootLoggerConfig provideConfig(ConfigManager configManager)
-	{
+	LootLoggerConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(LootLoggerConfig.class);
 	}
 }
