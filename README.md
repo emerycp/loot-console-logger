@@ -60,3 +60,15 @@ You can also sort top items by:
 
 ## Screenshots
 
+### Side Panel
+![java_7PuAoN9Z7I](https://github.com/user-attachments/assets/1e240bf3-d8fa-4305-9a50-be598066358a)
+![java_XQBz4Nqc2P](https://github.com/user-attachments/assets/aaee2c7f-8260-40d6-ba39-41def84853a3)
+![java_lHy1JCFPYC](https://github.com/user-attachments/assets/61e6abfc-afef-4009-b75b-b9b79f3b3193)
+
+### Settings
+![java_KJUM2N0Kjd](https://github.com/user-attachments/assets/32b0b949-4a37-4a17-812a-4eed103bbf41)
+![java_IqNQYqVw1I](https://github.com/user-attachments/assets/35ef9778-60bc-4199-a62c-38ec38a985c4)
+
+### Message Box
+![java_QabHg442rM](https://github.com/user-attachments/assets/a62ea4c0-c5d9-4dec-b2a2-8b16ce92ea87)
+
